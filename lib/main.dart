@@ -1,4 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import 'providers/diners_provider.dart';
+import 'providers/dishes_provider.dart';
+import 'screens/dishes_screen.dart';
+import 'screens/diners_screen.dart';
+import 'screens/summary_screen.dart';
 
 void main() {
   runApp(const MealSplitApp());
@@ -9,178 +16,83 @@ class MealSplitApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'MealSplit',
-      theme: ThemeData(
-        primarySwatch: Colors.grey,
-        brightness: Brightness.light,
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => DishesProvider()),
+        ChangeNotifierProvider(create: (_) => DinersProvider()),
+      ],
+      child: MaterialApp(
+        title: 'MealSplit',
+        theme: ThemeData(
+          brightness: Brightness.dark,
+          colorScheme: ColorScheme.dark(
+            primary: Colors.teal.shade300,
+            onPrimary: Colors.black,
+            surface: Colors.grey.shade900,
+            onSurface: Colors.white,
+            background: Colors.grey.shade800,
+            onBackground: Colors.white,
+          ),
+          scaffoldBackgroundColor: Colors.grey.shade900,
+          cardTheme: CardThemeData(
+            color: Colors.grey.shade800,
+            elevation: 3,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+          bottomNavigationBarTheme: BottomNavigationBarThemeData(
+            backgroundColor: Colors.grey.shade900,
+            selectedItemColor: Colors.teal.shade300,
+            unselectedItemColor: Colors.grey.shade500,
+          ),
+          textTheme: const TextTheme(
+            bodyLarge: TextStyle(color: Colors.white70),
+            bodyMedium: TextStyle(color: Colors.white70),
+            headlineSmall: TextStyle(color: Colors.white),
+          ),
+          appBarTheme: AppBarTheme(
+            backgroundColor: Colors.grey.shade800,
+            foregroundColor: Colors.teal.shade300,
+            elevation: 2,
+          ),
+        ),
+        home: const MainNavigation(),
+        debugShowCheckedModeBanner: false,
       ),
-      darkTheme: ThemeData(
-        brightness: Brightness.dark,
-      ),
-      themeMode: ThemeMode.system,
-      home: MealSplitScreen(),
-      debugShowCheckedModeBanner: false,
     );
   }
 }
 
-class MealSplitScreen extends StatefulWidget {
-  const MealSplitScreen({super.key});
+class MainNavigation extends StatefulWidget {
+  const MainNavigation({super.key});
 
   @override
-  _MealSplitScreenState createState() => _MealSplitScreenState();
+  State<MainNavigation> createState() => _MainNavigationState();
 }
 
-class _MealSplitScreenState extends State<MealSplitScreen> {
-  final _plates = <Plate>[];
-  final _nameController = TextEditingController();
-  final _priceController = TextEditingController();
-  final _peopleController = TextEditingController();
-  String _result = '';
+class _MainNavigationState extends State<MainNavigation> {
+  int _selectedIndex = 0;
 
-  void _addPlate() {
-    final name = _nameController.text;
-    final price = double.tryParse(_priceController.text) ?? 0.0;
-    final people = _peopleController.text.split(',').map((s) => s.trim()).toList();
-
-    if (name.isNotEmpty && price > 0 && people.isNotEmpty) {
-      setState(() {
-        _plates.add(Plate(name, price, people));
-        _nameController.clear();
-        _priceController.clear();
-        _peopleController.clear();
-      });
-    }
-  }
-
-  void _editPlate(int index) {
-    final plate = _plates[index];
-    _nameController.text = plate.name;
-    _priceController.text = plate.price.toString();
-    _peopleController.text = plate.people.join(', ');
-
-    _deletePlate(index);
-  }
-
-  void _deletePlate(int index) {
-    setState(() {
-      _plates.removeAt(index);
-    });
-  }
-
-  void _calculateSplit() {
-    final totalPerPerson = <String, double>{};
-
-    for (final plate in _plates) {
-      final sharedPrice = plate.price / plate.people.length;
-      for (final person in plate.people) {
-        totalPerPerson[person] = (totalPerPerson[person] ?? 0) + sharedPrice;
-      }
-    }
-
-    setState(() {
-      _result = 'Total por persona:\n';
-      totalPerPerson.forEach((person, total) {
-        _result += '$person: €${total.toStringAsFixed(2)}\n';
-      });
-    });
-  }
-
-  @override
-  void dispose() {
-    _nameController.dispose();
-    _priceController.dispose();
-    _peopleController.dispose();
-    super.dispose();
-  }
+  static final List<Widget> _screens = [
+    const DishesScreen(),
+    const DinersScreen(),
+    const SummaryScreen(),
+  ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('MealSplit'),
-        centerTitle: true,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: <Widget>[
-            TextField(
-              controller: _nameController,
-              decoration: const InputDecoration(
-                labelText: 'Nombre del plato',
-                border: OutlineInputBorder(),
-              ),
-            ),
-            const SizedBox(height: 16.0),
-            TextField(
-              controller: _priceController,
-              keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                labelText: 'Precio (€)',
-                border: OutlineInputBorder(),
-              ),
-            ),
-            const SizedBox(height: 16.0),
-            TextField(
-              controller: _peopleController,
-              decoration: const InputDecoration(
-                labelText: 'Personas (separadas por coma)',
-                border: OutlineInputBorder(),
-              ),
-            ),
-            const SizedBox(height: 16.0),
-            ElevatedButton(
-              onPressed: _addPlate,
-              child: const Text('Agregar Plato'),
-            ),
-            const SizedBox(height: 16.0),
-            ElevatedButton(
-              onPressed: _calculateSplit,
-              child: const Text('Calcular'),
-            ),
-            const SizedBox(height: 16.0),
-            Expanded(
-              child: ListView.builder(
-                itemCount: _plates.length,
-                itemBuilder: (context, index) {
-                  final plate = _plates[index];
-                  return ListTile(
-                    title: Text('${plate.name} - €${plate.price.toStringAsFixed(2)}'),
-                    subtitle: Text('Compartido por: ${plate.people.join(', ')}'),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.edit),
-                          onPressed: () => _editPlate(index),
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.delete),
-                          onPressed: () => _deletePlate(index),
-                        ),
-                      ],
-                    ),
-                  );
-                },
-              ),
-            ),
-            Text(
-              _result,
-              style: const TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
-            ),
-          ],
-        ),
+      body: _screens[_selectedIndex],
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _selectedIndex,
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.restaurant_menu), label: 'Platos'),
+          BottomNavigationBarItem(icon: Icon(Icons.people), label: 'Comensales'),
+          BottomNavigationBarItem(icon: Icon(Icons.receipt), label: 'Resumen'),
+        ],
+        onTap: (index) => setState(() => _selectedIndex = index),
       ),
     );
   }
-}
-
-class Plate {
-  final String name;
-  final double price;
-  final List<String> people;
-
-  Plate(this.name, this.price, this.people);
 }
