@@ -1,4 +1,3 @@
-// models/dish.dart
 class Dish {
   final String id;
   final String name;

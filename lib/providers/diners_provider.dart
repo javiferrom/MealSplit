@@ -1,4 +1,3 @@
-// providers/diners_provider.dart
 import 'package:flutter/material.dart';
 import '../models/diner.dart';
 import '../models/consumed_dish_info.dart';
@@ -17,6 +16,12 @@ class DinersProvider extends ChangeNotifier {
 
   void removeDiner(String id) {
     _diners.removeWhere((d) => d.id == id);
+    notifyListeners();
+  }
+
+  void updateDinerName(String id, String newName) {
+    final diner = _diners.firstWhere((d) => d.id == id);
+    diner.name = newName;
     notifyListeners();
   }
 

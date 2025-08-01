@@ -1,10 +1,9 @@
-// models/diner.dart
 import 'consumed_dish_info.dart';
 
 class Diner {
   final String id;
-  final String name;
-  Map<String, ConsumedDishInfo> consumedDishes; // dishId -> info
+  String name;
+  Map<String, ConsumedDishInfo> consumedDishes;
 
   Diner({
     required this.id,

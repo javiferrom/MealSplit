@@ -14,10 +14,8 @@ class SummaryScreen extends StatelessWidget {
     final dishes = dishesProvider.dishes;
 
     Map<String, double> amountsPerDiner = {};
-    Map<String, int> dishTotals = {}; // Para la sección tipo ticket
+    Map<String, int> dishTotals = {};
     double totalGeneral = 0.0;
-
-    // Este set ayuda a contar solo una vez cada plato compartido en dishTotals
     final Set<String> sharedDishesCounted = {};
 
     for (final diner in diners) {
@@ -37,7 +35,6 @@ class SummaryScreen extends StatelessWidget {
 
         total += (dish.price * info.quantity) / divisor;
 
-        // Para contar platos compartidos solo una vez, sumando la cantidad real
         if (info.isShared) {
           if (!sharedDishesCounted.contains(dishId)) {
             dishTotals[dishId] = (dishTotals[dishId] ?? 0) + info.quantity;
@@ -53,9 +50,9 @@ class SummaryScreen extends StatelessWidget {
     }
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Resumen de Cuenta')),
+      appBar: AppBar(title: const Text('Resumen del ticket')),
       body: diners.isEmpty
-          ? const Center(child: Text('No hay comensales aún.'))
+          ? const Center(child: Text('No hay datos aún.'))
           : Column(
               children: [
                 Expanded(
@@ -142,7 +139,7 @@ class SummaryScreen extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
                             const Text(
-                              'TOTAL GENERAL: ',
+                              'TOTAL: ',
                               style: TextStyle(fontWeight: FontWeight.bold),
                             ),
                             Text(

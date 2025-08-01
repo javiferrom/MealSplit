@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
 import 'providers/diners_provider.dart';
 import 'providers/dishes_provider.dart';
 import 'screens/dishes_screen.dart';
@@ -26,7 +25,7 @@ class MealSplitApp extends StatelessWidget {
         theme: ThemeData(
           brightness: Brightness.dark,
           colorScheme: ColorScheme.dark(
-            primary: Colors.teal.shade300,
+            primary: Colors.white,
             onPrimary: Colors.black,
             surface: Colors.grey.shade900,
             onSurface: Colors.white,
@@ -41,7 +40,7 @@ class MealSplitApp extends StatelessWidget {
           ),
           bottomNavigationBarTheme: BottomNavigationBarThemeData(
             backgroundColor: Colors.grey.shade900,
-            selectedItemColor: Colors.teal.shade300,
+            selectedItemColor: Colors.white,
             unselectedItemColor: Colors.grey.shade500,
           ),
           textTheme: const TextTheme(
@@ -51,7 +50,7 @@ class MealSplitApp extends StatelessWidget {
           ),
           appBarTheme: AppBarTheme(
             backgroundColor: Colors.grey.shade800,
-            foregroundColor: Colors.teal.shade300,
+            foregroundColor: Colors.white,
             elevation: 2,
           ),
         ),

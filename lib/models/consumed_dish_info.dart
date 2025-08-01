@@ -1,4 +1,3 @@
-// models/consumed_dish_info.dart
 class ConsumedDishInfo {
   int quantity;
   bool isShared;
