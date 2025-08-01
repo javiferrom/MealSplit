@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../models/diner.dart';
-import '../models/dish.dart';
 import '../providers/diners_provider.dart';
 import '../providers/dishes_provider.dart';
 
