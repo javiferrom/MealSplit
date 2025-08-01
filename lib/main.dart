@@ -30,8 +30,6 @@ class MealSplitApp extends StatelessWidget {
             onPrimary: Colors.black,
             surface: Colors.grey.shade900,
             onSurface: Colors.white,
-            background: Colors.grey.shade800,
-            onBackground: Colors.white,
           ),
           scaffoldBackgroundColor: Colors.grey.shade900,
           cardTheme: CardThemeData(
